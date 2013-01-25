@@ -7,7 +7,9 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    by_attr = params[:sort_by]
+    @movies = Movie.order by_attr
+    eval "@sort_by_#{by_attr} = true"
   end
 
   def new
