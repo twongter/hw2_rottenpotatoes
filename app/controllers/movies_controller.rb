@@ -7,9 +7,16 @@ class MoviesController < ApplicationController
   end
 
   def index
-    by_attr = params[:sort_by]
-    @movies = Movie.order by_attr
-    eval "@sort_by_#{by_attr} = true"
+  #sorting issue
+    sorting_attr = (params[:sort_by] or session[:sort_by])
+    session[:sort_by] = sorting_attr #keep the latest setting
+    eval "@sort_by_#{sorting_attr} = 1"
+  #rating issue
+    @all_ratings = Movie.all_ratings
+    @selected_ratings = (params[:ratings] or session[:ratings] or Hash[@all_ratings.map {|r| [r, "1"]}])
+    session[:ratings] = @selected_ratings
+  #get the movies
+    @movies = Movie.order(sorting_attr).find_all_by_rating(@selected_ratings.keys)
   end
 
   def new
